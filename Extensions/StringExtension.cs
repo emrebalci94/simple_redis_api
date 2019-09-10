@@ -4,9 +4,9 @@ namespace simple_redis_api.Extension
 {
     public static class StringExtension
     {
-        public static TValue ToObject<TValue>(this string value) where TValue : class
+        public static T ToObject<T>(this string value) where T : class
         {
-            return string.IsNullOrEmpty(value) ? null : JsonConvert.DeserializeObject<TValue>(value);
+            return string.IsNullOrEmpty(value) ? null : JsonConvert.DeserializeObject<T>(value);
         }
     }
 

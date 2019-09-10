@@ -34,7 +34,7 @@ namespace simple_redis_api.Models
             _client.GetDatabase().StringSet(key, value);
         }
 
-        public void Set<TValue>(string key, TValue value) where TValue : class
+        public void Set<T>(string key, T value) where T : class
         {
             _client.GetDatabase().StringSet(key, value.ToJson());
         }
@@ -54,11 +54,11 @@ namespace simple_redis_api.Models
             return _client.GetDatabase().StringSetAsync(key, value.ToJson(), expiration);
         }
 
-        public TValue Get<TValue>(string key) where TValue : class
+        public T Get<T>(string key) where T : class
         {
             string value = _client.GetDatabase().StringGet(key);
 
-            return value.ToObject<TValue>();
+            return value.ToObject<T>();
         }
 
         public string Get(string key)
@@ -66,11 +66,11 @@ namespace simple_redis_api.Models
             return _client.GetDatabase().StringGet(key);
         }
 
-        public async Task<TValue> GetAsync<TValue>(string key) where TValue : class
+        public async Task<T> GetAsync<T>(string key) where T : class
         {
             string value = await _client.GetDatabase().StringGetAsync(key);
 
-            return value.ToObject<TValue>();
+            return value.ToObject<T>();
         }
 
         public void Remove(string key)

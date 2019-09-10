@@ -20,8 +20,8 @@ namespace simple_redis_api.Models
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        /// <typeparam name="TValue"></typeparam>
-        void Set<TValue>(string key, TValue value) where TValue : class;
+        /// <typeparam name="T"></typeparam>
+        void Set<T>(string key, T value) where T : class;
 
         /// <summary>
         /// Sonsuz süreyle cache'e atar.
@@ -50,9 +50,9 @@ namespace simple_redis_api.Models
         /// Eğer bu key'e ait bir obje varsa getirir.
         /// </summary>
         /// <param name="key"></param>
-        /// <typeparam name="TValue"></typeparam>
+        /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        TValue Get<TValue>(string key) where TValue : class;
+        T Get<T>(string key) where T : class;
 
         /// <summary>
         /// Eğer bu key'e ait bir string varsa getirir.
@@ -65,9 +65,9 @@ namespace simple_redis_api.Models
         /// Eğer bu key'e ait bir obje varsa getirir.
         /// </summary>
         /// <param name="key"></param>
-        /// <typeparam name="TValue"></typeparam>
+        /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        Task<TValue> GetAsync<TValue>(string key) where TValue : class;
+        Task<T> GetAsync<T>(string key) where T : class;
 
         /// <summary>
         /// Cache'ten bu key'i siler.
