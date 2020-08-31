@@ -11,7 +11,7 @@ namespace simple_redis_api.Controllers
 {
     [Route("api/{controller}")]
     [ApiController]
-    public class TestController : BaseController
+    public class TestController : ControllerBase
     {
         private readonly ICacheService _cacheService;
         public TestController(ICacheService cacheService)
@@ -19,29 +19,15 @@ namespace simple_redis_api.Controllers
             _cacheService = cacheService;
         }
 
-        [HttpGet("Create/{count}")]
-        public async Task<IActionResult> New(int count = 10000)
+        [HttpGet("Create")]
+        public async Task<IActionResult> Create()
         {
-            var models = new List<TestModel>();
-            for (int i = 0; i < count; i++)
-            {
-                models.Add(new TestModel(Faker.Name.First(), Faker.Name.Last()));
-            }
-
-            await System.IO.File.WriteAllTextAsync("data.json", JsonConvert.SerializeObject(models));
-
-            return ServiceResponse("Ok");
+            var models = await _cacheService.GetAsync<List<TestModel>>("models") ?? new List<TestModel>();
+            var model = new TestModel(Faker.Name.First(), Faker.Name.Last());
+            models.Add(model);
+            await _cacheService.SetAsync("models", models);
+            return Ok(model);
         }
-
-        // [HttpGet("Create")]
-        // public async Task<IActionResult> Create()
-        // {
-        //     var models = await _cacheService.GetAsync<List<TestModel>>("models") ?? new List<TestModel>();
-        //     var model = new TestModel(Faker.Name.First(), Faker.Name.Last());
-        //     models.Add(model);
-        //     await _cacheService.SetAsync("models", models);
-        //     return ServiceResponse(model);
-        // }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
@@ -55,36 +41,23 @@ namespace simple_redis_api.Controllers
                     var model = models.FirstOrDefault(p => p.Id == guidId);
                     if (model != null)
                     {
-                        return ServiceResponse(model);
+                        return Ok(model);
                     }
                 }
                 catch (System.Exception)
                 {
                 }
             }
-            return ServiceResponse("Üye bulunamadı");
+            return BadRequest("Üye bulunamadı");
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            Stopwatch watch = new Stopwatch();
-            Console.WriteLine("başlanıyor...");
+           
             var cache = await _cacheService.GetAsync<List<TestModel>>("models");
-            Console.WriteLine("bitti...");
-
-            watch.Start();
-            if (cache == null)
-            {
-                Console.Write("cacheden gelmedi.");
-                var json = System.IO.File.ReadAllText("data.json");
-                var data = JsonConvert.DeserializeObject<List<TestModel>>(json);
-                await _cacheService.SetAsync("models", data);
-                watch.Stop();
-                return ServiceResponse(new ResponseModel(watch.Elapsed.TotalMilliseconds, data));
-            }
-            watch.Stop();
-            return ServiceResponse(new ResponseModel(watch.Elapsed.TotalMilliseconds, cache));
+         
+            return Ok(cache);
         }
     }
 }
